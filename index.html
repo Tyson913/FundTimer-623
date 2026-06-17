@@ -1,103 +1,185 @@
-<!-- 
- 
-    Gi utro nako ug himo for retention and since kayaot man sa ako nahimo tung una.
-    Ang design ani is not yet final. I'll just paste the link sa site somewhere pag ma deploy na.
+<!--
+
+App Name: Until
+
+Description: Until is a savings timeline calculator for people who know what they want to buy but not how long it'll take.
+Enter your target item, its price, and how much you can set aside at a given frequency — daily, weekly, monthly, or yearly — and the app tells you exactly when you'll reach your goal. It also generates a full savings plan with a projected start and end date, so you can commit to a schedule rather than just guess.
+No budgeting system. No account sync. Just: here's the thing, here's your rate — here's the date.
 
 -->
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Until — tell it what you want to buy and what you can set aside, and it tells you exactly when you'll have enough.">
+    <title>Until — savings timeline calculator</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=keyboard_double_arrow_right" />
 </head>
+
 <body>
-    <header>
-        FundTimer
+    <header class="site-header">
+        <a href="index.html" class="wordmark">Until</a>
+        <a href="manual.html" class="nav-link">Guide</a>
     </header>
     <main>
-        <form action="" id="ftForm">
-            <label for="">Product Name</label>
-            <input type="text" id="prodName" required>
+        <p class="tagline">Tell it what you want and what you can set aside. It tells you the date.</p>
 
-            <label for="">Product Quantity</label>
-            <input type="number" id="prodQuan" required>
+        <form action="" id="ftForm" novalidate>
 
-            <label for="">Price Currency</label>
-            <select id="prodCurr" required>
-                <option value="php">Philippine Peso (PHP - ₱)</option>
-                <option value="usd">US Dollar (USD - $)</option>
-                <option value="eur">Euro (EUR - €)</option>
-                <option value="cny">Chinese Yuan (CNY - CN¥)</option>
-                <option value="jpy">Japanese Yen (JPY - ¥)</option>
-                <option value="gbp">British Pound (GBP - £)</option>
-            </select>
+            <div class="field-section">
+                <h2>The purchase</h2>
 
-            <label for="">Unit Price</label>
-            <input type="number" id="prodPrice" required>
+                <div class="field">
+                    <label for="prodName">Item name</label>
+                    <input type="text" id="prodName" placeholder="e.g. Wireless headphones" required>
+                </div>
 
-            <div  id="savstartdate" style="display: none;">
-                <label for="">Saving Starting Date</label>
-                <input type="date" id="targetPurDate">
+                <div class="field-pair">
+                    <div class="field">
+                        <label for="prodQuan">Quantity</label>
+                        <input type="number" id="prodQuan" placeholder="1" required>
+                    </div>
+                    <div class="field">
+                        <label for="prodCurr">Price currency</label>
+                        <select id="prodCurr" required>
+                            <option value="php">Philippine Peso (PHP - ₱)</option>
+                            <option value="usd">US Dollar (USD - $)</option>
+                            <option value="eur">Euro (EUR - €)</option>
+                            <option value="cny">Chinese Yuan (CNY - CN¥)</option>
+                            <option value="jpy">Japanese Yen (JPY - ¥)</option>
+                            <option value="gbp">British Pound (GBP - £)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="prodPrice">Unit price</label>
+                    <input type="number" id="prodPrice" placeholder="0" required>
+                </div>
+
+                <div id="savstartdate" style="display: none;">
+                    <div class="field">
+                        <label for="targetPurDate">Starting date</label>
+                        <input type="date" id="targetPurDate">
+                    </div>
+                </div>
             </div>
 
-            <label for="">Savings Frequency</label>
+            <div class="field-section">
+                <h2>The plan</h2>
 
-            <select id="savFreq" required>
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-            </select>
+                <div class="field-pair">
+                    <div class="field">
+                        <label for="savFreq">Save</label>
+                        <select id="savFreq" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="savCurr">Savings currency</label>
+                        <select id="savCurr" required>
+                            <option value="php">Philippine Peso (PHP - ₱)</option>
+                            <option value="usd">US Dollar (USD - $)</option>
+                            <option value="eur">Euro (EUR - €)</option>
+                            <option value="cny">Chinese Yuan (CNY - CN¥)</option>
+                            <option value="jpy">Japanese Yen (JPY - ¥)</option>
+                            <option value="gbp">British Pound (GBP - £)</option>
+                        </select>
+                    </div>
+                </div>
 
-            <label for="">Savings Currency</label>
-            <select id="savCurr" required>
-                <option value="php">Philippine Peso (PHP - ₱)</option>
-                <option value="usd">US Dollar (USD - $)</option>
-                <option value="eur">Euro (EUR - €)</option>
-                <option value="cny">Chinese Yuan (CNY - CN¥)</option>
-                <option value="jpy">Japanese Yen (JPY - ¥)</option>
-                <option value="gbp">British Pound (GBP - £)</option>
-            </select>
+                <div class="field">
+                    <label for="savAm" id="savamLabel">
+                        Amount to save
+                        <span id="freqUnit"> · per <span id="sfreqlabel"></span></span>
+                    </label>
+                    <input type="number" id="savAm" placeholder="0" required>
+                </div>
+            </div>
 
-            <label for="">Savings Amount</label>
-            <input type="number" id="savAm" required>
-            <input type="submit" value="Estimate Time To Purchase" id="etpButt">
+            <button type="submit" id="etpButt" class="btn btn-primary">Calculate</button>
         </form>
-        <button type="button" id="gensavplanbuttn">Generate savings plan</button>
+
+        <button type="button" id="gensavplanbuttn" class="btn btn-secondary">Generate savings plan</button>
 
         <div id="resultboxFETCalc" class="res-box" style="display: none;">
-            <label>Item: <p id="pn"></p></label>
-            <label>Quantity:<p id="pquan"></p></label>
-            <label>Unit Price: <p id="up"></p></label>
-            <label>Savings Frequency: <p id="sf"></p></label>
-            <label>Savings Amount: <p id="sa"></p></label>
-            <label>Estimated Time Purchase: <p id="etp"></p></label>
+            <div class="row">
+                <span class="row-label">Item</span>
+                <span id="pn" class="row-value"></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Quantity</span>
+                <span id="pquan" class="row-value"></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Unit price</span>
+                <span id="up" class="row-value"></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Frequency</span>
+                <span id="sf" class="row-value"></span>
+            </div>
+            <div class="row" id="savfreqRes">
+                <span id="savfreqLabel" class="row-label"></span>
+                <span id="sa" class="row-value"></span>
+            </div>
+
+            <div class="stub-divider" aria-hidden="true"></div>
+
+            <div id="FETCalcresLabel" class="hero-row">
+                <span class="hero-label">Until you can buy it</span>
+                <span id="etp" class="hero-value"></span>
+                <span id="extraAm" class="hero-extra"></span>
+            </div>
         </div>
 
         <div id="resultboxSavPlanGen" class="res-box" style="display: none;">
-            <label id="item">Item: <p id="pn2"></p></label>
+            <div class="row" id="item">
+                <span class="row-label">Item</span>
+                <span id="pn2" class="row-value"></span>
+            </div>
+
             <div id="detailsCon">
-                <div class="details">            
-                    <label>Quantity:<p id="pquan2"></p></label>
-                    <label>Unit Price: <p id="up2"></p></label>
+                <div class="details">
+                    <div class="row">
+                        <span class="row-label">Quantity</span>
+                        <span id="pquan2" class="row-value"></span>
+                    </div>
+                    <div class="row">
+                        <span class="row-label">Unit price</span>
+                        <span id="up2" class="row-value"></span>
+                    </div>
                 </div>
                 <div class="details" id="detail2">
-                    <label>Savings Frequency: <p id="sf2"></p></label>
-                    <label>Savings Amount: <p id="sa2"></p></label>
+                    <div class="row">
+                        <span class="row-label">Frequency</span>
+                        <span id="sf2" class="row-value"></span>
+                    </div>
+                    <div class="row">
+                        <span class="row-label">Amount</span>
+                        <span id="sa2" class="row-value"></span>
+                    </div>
                 </div>
             </div>
+
+            <div class="stub-divider" aria-hidden="true"></div>
+
             <div id="analysisModelCon">
                 <div class="box" id="startingDateCon"></div>
-                <span class="material-symbols-outlined" style="font-size: 30px;">
-                keyboard_double_arrow_right
-                </span>
+                <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
                 <div class="box" id="endingDateCon"></div>
             </div>
-            <label for="">Summary: <p id="analText"></p></label>
+
+            <p class="summary-label">Summary</p>
+            <p id="analText" class="summary-text"></p>
         </div>
     </main>
     <footer>
@@ -106,4 +188,5 @@
     </footer>
     <script src="./Backend/operations.js" type="module"></script>
 </body>
+
 </html>

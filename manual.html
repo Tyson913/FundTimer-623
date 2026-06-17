@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="How Until works — a short guide to estimating your savings timeline and building a savings plan.">
+    <title>Guide — Until</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+        :root {
+            --paper: #F2EEE2;
+            --paper-deep: #E8E1CC;
+            --ink: #1C2620;
+            --ink-soft: #6A6F62;
+            --gold: #B8862E;
+            --gold-deep: #8C611E;
+            --moss: #3E5C46;
+            --moss-deep: #2C4534;
+            --line: #D7CEB4;
+            --radius: 3px;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: var(--paper);
+            background-image: radial-gradient(var(--line) 1px, transparent 1.6px);
+            background-size: 22px 22px;
+            color: var(--ink);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        /* ── Header (shared identity with the calculator) ─ */
+
+        header.site-header {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--paper);
+            border-bottom: 1px solid var(--line);
+            z-index: 10;
+        }
+
+        .wordmark {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.4rem;
+            letter-spacing: -0.02em;
+            text-decoration: none;
+            color: var(--ink);
+        }
+
+        .nav-link {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--ink-soft);
+            border-bottom: 1px solid transparent;
+            padding-bottom: 2px;
+            transition: color .15s ease, border-color .15s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible {
+            color: var(--gold-deep);
+            border-color: var(--gold-deep);
+        }
+
+        a:focus-visible {
+            outline: 2px solid var(--gold-deep);
+            outline-offset: 2px;
+        }
+
+        /* ── Layout ─────────────────────────────────────── */
+
+        main,
+        footer {
+            width: 100%;
+            max-width: 640px;
+            padding: 0 20px;
+        }
+
+        main {
+            padding-top: 28px;
+            padding-bottom: 60px;
+        }
+
+        .kicker {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.68rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--gold-deep);
+            margin: 0 0 6px;
+        }
+
+        h1 {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: clamp(1.6rem, 6vw, 2.1rem);
+            letter-spacing: -0.01em;
+            margin: 0 0 14px;
+            line-height: 1.2;
+        }
+
+        .intro {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--ink-soft);
+            max-width: 56ch;
+            margin: 0 0 28px;
+        }
+
+        /* ── Table of contents ──────────────────────────── */
+
+        .toc {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px 18px;
+            padding: 14px 0;
+            margin-bottom: 30px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .toc a {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.76rem;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            color: var(--ink);
+            border-bottom: 1px solid transparent;
+            transition: color .15s ease, border-color .15s ease;
+        }
+
+        .toc a:hover {
+            color: var(--gold-deep);
+            border-color: var(--gold-deep);
+        }
+
+        /* ── Sections ───────────────────────────────────── */
+
+        section {
+            margin-bottom: 38px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed var(--line);
+        }
+
+        section:last-of-type {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            letter-spacing: -0.005em;
+            margin: 0 0 12px;
+            color: var(--ink);
+        }
+
+        section p {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            max-width: 60ch;
+            margin: 0 0 14px;
+        }
+
+        section p:last-child {
+            margin-bottom: 0;
+        }
+
+        section ol {
+            margin: 0;
+            padding-left: 1.2em;
+            max-width: 60ch;
+        }
+
+        section ol li {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            margin-bottom: 10px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        section ol li::marker {
+            color: var(--gold-deep);
+            font-weight: 600;
+        }
+
+        section ol li strong,
+        section p strong {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            color: var(--ink);
+        }
+
+        section ol li em,
+        section p em {
+            font-style: normal;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--moss-deep);
+        }
+
+        /* ── FAQ accordion ──────────────────────────────── */
+
+        details {
+            border-bottom: 1px solid var(--line);
+            padding: 14px 0;
+        }
+
+        details:first-of-type {
+            border-top: 1px solid var(--line);
+        }
+
+        summary {
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.92rem;
+            color: var(--ink);
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: "+";
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--gold-deep);
+        }
+
+        details[open] summary::after {
+            content: "–";
+        }
+
+        details p {
+            margin: 10px 0 0;
+            color: var(--ink-soft);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            max-width: 58ch;
+        }
+
+        /* ── Footer ─────────────────────────────────────── */
+
+        footer {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 28px;
+        }
+
+        footer p {
+            margin: 1px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.04em;
+            color: var(--ink-soft);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                transition-duration: 0.001ms !important;
+            }
+        }
+
+        @media (min-width: 640px) {
+            main {
+                padding-top: 38px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <a href="index.html" class="wordmark">Until</a>
+        <a href="index.html" class="nav-link">Calculator</a>
+    </header>
+
+    <main>
+        <p class="kicker">Guide</p>
+        <h1>How Until works</h1>
+        <p class="intro">
+            Until turns a price and a savings rate into a date. No budgeting system, no account
+            sync — just the thing you want, the amount you can set aside, and the math in between.
+            This page walks through both ways to use it.
+        </p>
+
+        <nav class="toc" aria-label="On this page">
+            <a href="#estimate">Estimate your timeline</a>
+            <a href="#plan">Build a savings plan</a>
+            <a href="#results">Reading your results</a>
+            <a href="#currency">Currencies and rates</a>
+            <a href="#faq">Questions</a>
+        </nav>
+
+        <section id="estimate">
+            <h2>Estimate your timeline</h2>
+            <p>
+                This is the default mode — use it when you just want to know how long it'll take,
+                starting from today.
+            </p>
+            <ol>
+                <li>Under <strong>The purchase</strong>, enter the item's name, quantity, currency,
+                    and unit price.</li>
+                <li>Under <strong>The plan</strong>, choose how often you'll save, the currency
+                    you're saving in, and the amount per period.</li>
+                <li>Select <strong>Calculate</strong>.</li>
+                <li>A result stub appears below the form with the date math worked out — how many
+                    days, weeks, months, or years until you've saved enough.</li>
+            </ol>
+        </section>
+
+        <section id="plan">
+            <h2>Build a savings plan</h2>
+            <p>
+                Use this mode when you want a concrete start and end date to commit to, rather
+                than a duration counted from today.
+            </p>
+            <ol>
+                <li>Select <strong>Generate savings plan</strong>. A <strong>Starting date</strong>
+                    field appears in the form.</li>
+                <li>Fill in the same purchase and plan details as before, plus the date you intend
+                    to start saving.</li>
+                <li>Select <strong>Calculate</strong>. The result now shows a starting date and an
+                    ending date side by side, with a plain-language summary underneath.</li>
+                <li>Select <strong>Back to default mode</strong> at any time to return to the
+                    simple duration estimate.</li>
+            </ol>
+        </section>
+
+        <section id="results">
+            <h2>Reading your results</h2>
+            <p>
+                The large figure in the result stub is your estimated saving period — for
+                example, <em>6 weeks</em>. Hover or tap it to see that same period converted into
+                other units, like days or months, in case one of them is easier to plan around.
+            </p>
+            <p>
+                If your savings amount doesn't divide evenly into the total price, you'll see a
+                line noting the extra amount needed on the final deposit — this is the remainder
+                after your last full installment.
+            </p>
+            <p>
+                If your savings amount already covers the total cost on its own, there's nothing
+                to calculate: you can already afford it.
+            </p>
+        </section>
+
+        <section id="currency">
+            <h2>Currencies and rates</h2>
+            <p>
+                Until supports six currencies for both the item price and your savings: Philippine
+                Peso, US Dollar, Euro, Chinese Yuan, Japanese Yen, and British Pound. If your price
+                and savings currencies differ, the total is converted using a fixed reference rate
+                built into the app.
+            </p>
+            <p>
+                These rates are a snapshot, not a live feed — treat the result as a close estimate
+                rather than an exact market conversion, especially for larger amounts.
+            </p>
+        </section>
+
+        <section id="faq">
+            <h2>Questions</h2>
+
+            <details>
+                <summary>Why does the unit change from weeks to months when I hover the result?</summary>
+                <p>
+                    The hover card just re-expresses the same length of time in other units, so you
+                    can pick whichever one is easiest to plan around — a payday cadence, a calendar
+                    month, and so on. The underlying answer doesn't change.
+                </p>
+            </details>
+
+            <details>
+                <summary>What does "extra amount needed" mean?</summary>
+                <p>
+                    Until rounds your timeline down to a whole number of saving periods. If that
+                    leaves a remainder — say your price doesn't divide evenly by your savings
+                    amount — it's shown as a small extra deposit needed on top of your regular
+                    schedule.
+                </p>
+            </details>
+
+            <details>
+                <summary>Can I save in one currency and price the item in another?</summary>
+                <p>
+                    Yes. Set the price currency and the savings currency independently, and Until
+                    converts between them automatically using its built-in reference rates.
+                </p>
+            </details>
+
+            <details>
+                <summary>Does Until store or sync anything?</summary>
+                <p>
+                    No. Nothing is saved between visits — every calculation starts fresh from what
+                    you enter in the form.
+                </p>
+            </details>
+        </section>
+    </main>
+
+    <footer>
+        <p>Created by: Cj Banluta</p>
+        <p>All rights reserved 2026</p>
+    </footer>
+</body>
+</html>

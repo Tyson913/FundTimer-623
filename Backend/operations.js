@@ -28,6 +28,27 @@ const savplanGenBttn = document.getElementById("gensavplanbuttn");
 const resbox1 = document.getElementById("resultboxFETCalc");
 const resbox2 = document.getElementById("resultboxSavPlanGen");
 
+
+const etpFreq = {
+    daily: "day",
+    weekly: "week",
+    monthly: "month",
+    yearly: "year",
+};
+
+const sfreq = document.getElementById("sfreqlabel");
+const savFreqDropdown = document.getElementById("savFreq");
+
+savFreqDropdown.addEventListener('change', function () {
+    sfreq.textContent = etpFreq[savFreqDropdown.value];
+    const freqlabel = document.getElementById("freqUnit");
+})
+
+
+
+
+
+
 form.addEventListener("submit", function (e) {
     e.preventDefault();
     prodName = document.getElementById("prodName").value.trim();
@@ -48,26 +69,33 @@ form.addEventListener("submit", function (e) {
             savingsFreq,
             savingsAm
         );
-        fillResBox1(
-            prodName,
-            prodQuan,
-            prodCurr,
-            prodPrice,
-            savingsCurr,
-            savingsFreq,
-            savingsAm,
-            estimatedTimePur,
-            neededAmount
-        );
-        resbox1.style.display = 'flex';
+        if (estimatedTimePur !== 0 && neededAmount !== 0) {
+            fillResBox1(
+                prodName,
+                prodQuan,
+                prodCurr,
+                prodPrice,
+                savingsCurr,
+                savingsFreq,
+                savingsAm,
+                estimatedTimePur,
+                neededAmount
+            );
+            resbox1.style.display = 'flex';
+        }
+        else {
+            mess = document.createElement('div');
+            mess.textContent = "Your balance is enough to buy the product right now";
+            mess.classList.add("messageBox");
+        }
         form.reset();
     }
     else {
-
         startingDate = new Date(document.getElementById("targetPurDate").value);
 
         let endingDate;
         let timeNeeded;
+
         [endingDate, timeNeeded] = savplanGen(
             prodName,
             prodQuan,
@@ -78,7 +106,6 @@ form.addEventListener("submit", function (e) {
             savingsFreq,
             savingsAm
         );
-
         startingDate = String(startingDate).slice(4, 15);
         endingDate = String(endingDate).slice(4, 15);
         fillResBox2(
@@ -106,15 +133,6 @@ const currencySigns = {
     jpy: "¥",
     gbp: "£"
 };
-
-
-const etpFreq = {
-    daily: "days",
-    weekly: "weeks",
-    monthly: "months",
-    yearly: "years",
-};
-
 
 const AmountConvertion = {
     php: {
@@ -167,9 +185,6 @@ const AmountConvertion = {
     }
 };
 
-
-
-
 savplanGenBttn.addEventListener("click", function () {
     const savstartdateCon = document.getElementById("savstartdate");
 
@@ -202,7 +217,7 @@ function defFETCalc(
 
     if (savingsCurrency === priceCurrency) {
         totalPrice = unitPrice * prodQuantity;
-        if (totalPrice > savingsAmount) {
+        if (totalPrice >= savingsAmount) {
             initET = totalPrice / savingsAmount;
         }
     }
@@ -217,10 +232,7 @@ function defFETCalc(
         }
     }
 
-    if (savingsAmount >= totalPrice) {
-        mess = document.createElement('div');
-        mess.textContent = "Your balance is enough to buy the product right now";
-        mess.classList.add("messageBox");
+    if (savingsAmount > totalPrice) {
         return [0, 0]
     }
 
@@ -291,26 +303,161 @@ function fillResBox1(
     estimatedTimePur,
     neededAmount
 ) {
+    const extraAm = document.getElementById("extraAm");
     const pn = document.getElementById("pn");
     const pquan = document.getElementById("pquan");
     const up = document.getElementById("up");
     const sf = document.getElementById("sf");
     const sa = document.getElementById("sa");
     const etp = document.getElementById("etp");
+    const savFreqResLabel = document.getElementById("savfreqRes");
     pn.textContent = productName;
     pquan.textContent = prodQuantity;
     up.textContent = `${currencySigns[priceCurrency]}${unitPrice}`;
     sf.textContent = savingsFreq;
+
+    document.getElementById("savfreqLabel").textContent =
+        `Savings Deposit Amount Per ${etpFreq[savingsFreq]}: `;
     sa.textContent = `${currencySigns[savingsCurrency]}${savingsAmount}`;
 
     if (neededAmount > 0) {
-        etp.textContent = ` ${estimatedTimePur} ${etpFreq[savingsFreq]} and extra ${currencySigns[savingsCurrency]}${neededAmount} needed.`;
+        etp.textContent = `${estimatedTimePur} ${etpFreq[savingsFreq]}${etpFreq[savingsFreq] !== 1 ? "s" : ""}`;
+        extraAm.textContent = `and extra ${currencySigns[savingsCurrency]}${neededAmount} needed.`;
     }
     else {
-        etp.textContent = ` ${estimatedTimePur} ${etpFreq[savingsFreq]}.`;
+        etp.textContent = ` ${estimatedTimePur} ${etpFreq[savingsFreq]}${etpFreq[savingsFreq] !== 1 ? "s" : ""}.`;
     }
-}
 
+    const convertionsUnits = [];
+    const estimatedTimeNeededLabel = `${estimatedTimePur} ${etpFreq[savingsFreq]}`;
+    for (const [key, value] of Object.entries(etpFreq)) {
+        if (value != etpFreq[savingsFreq]) {
+            let equivalentVal;
+            let equivalent;
+
+            if (value === "day") {
+                if (etpFreq[savingsFreq] === "week") {
+                    equivalent = Math.trunc(estimatedTimePur * 7);
+                    equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
+                }
+                else if (etpFreq[savingsFreq] === "month") {
+                    equivalent = Math.trunc(estimatedTimePur * 30);
+                    equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
+                }
+                else {
+                    equivalent = Math.trunc(estimatedTimePur * 365);
+                    equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
+                }
+
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
+            }
+
+            else if (value === "week") {
+                if (etpFreq[savingsFreq] === "day") {
+                    equivalent = Math.trunc(estimatedTimePur / 7);
+                    equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
+                }
+                else if (etpFreq[savingsFreq] === "month") {
+                    equivalent = Math.trunc(estimatedTimePur * 4);
+                    equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
+                }
+                else {
+                    equivalent = Math.trunc(estimatedTimePur * 52);
+                    equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
+                }
+
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
+            }
+
+            else if (value === "month") {
+                if (etpFreq[savingsFreq] === "day") {
+                    equivalent = Math.trunc(estimatedTimePur / 30);
+                    equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
+                }
+                else if (etpFreq[savingsFreq] === "week") {
+                    equivalent = Math.trunc(estimatedTimePur / 4);
+                    equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
+                }
+                else {
+                    equivalent = Math.trunc(estimatedTimePur * 12);
+                    equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
+                }
+
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
+            }
+            else {
+                if (etpFreq[savingsFreq] === "day") {
+                    equivalent = Math.trunc(estimatedTimePur / 365);
+                    equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
+                }
+                else if (etpFreq[savingsFreq] === "week") {
+                    equivalent = Math.trunc(estimatedTimePur / 52);
+                    equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
+                }
+                else {
+                    equivalent = Math.trunc(estimatedTimePur / 12);
+                    equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
+                }
+
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
+            }
+        }
+    }
+    const convertions = `
+        <div id="convertionsCon" style="display: none;">
+            <div id="cvheader">Time Unit Convertions</div>
+            ${convertionsUnits.map(a => `
+            <div class="convertion">
+                <label>
+                    <span class="key">${a.estimatedTimeNeeded}</span>
+                    <span class="val">${a.equivalent}</span>
+                </label>
+            </div>
+            <div class="arrow"></div>
+            `).join("")}
+        </div>
+    `;
+
+    etp.insertAdjacentHTML(
+        "beforeend",
+        convertions
+    );
+    const convertionsElem = document.getElementById("convertionsCon");
+
+    etp.addEventListener("mouseenter", () => {
+        convertionsElem.style.display = 'flex';
+    });
+
+    etp.addEventListener("mouseleave", () => {
+        convertionsElem.style.display = 'none';
+    });
+}
+/*
+    To-Do
+
+    1. I apply sa resbox1 ang new feature. (naa sa taas)
+
+*/
 const analBox1 = document.getElementById("startingDateCon");
 const analBox2 = document.getElementById("endingDateCon");
 const analText = document.getElementById("analText");
@@ -404,7 +551,6 @@ function fillResBox2(
         `Your goal is to purchase ${productText} priced at ${formattedUnitPrice}${unitText}. With ${formattedSavingsAmount} already saved and ${timeHighlight} available between ${startingDate} and ${endingDate}, you can continue progressing toward your target.`
     ];
 
-
     analIndex = Math.floor(Math.random() * 27);
     analysis = analTexts[analIndex];
 
@@ -419,12 +565,12 @@ function fillResBox2(
             let equivalentVal;
             let equivalent;
 
-            if (value === "days") {
-                if (etpFreq[savingsFreq] === "weeks") {
+            if (value === "day") {
+                if (etpFreq[savingsFreq] === "week") {
                     equivalent = Math.trunc(timeNeeded * 7);
                     equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
                 }
-                else if (etpFreq[savingsFreq] === "months") {
+                else if (etpFreq[savingsFreq] === "month") {
                     equivalent = Math.trunc(timeNeeded * 30);
                     equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
                 }
@@ -433,18 +579,20 @@ function fillResBox2(
                     equivalentVal = `${equivalent} day${equivalent !== 1 ? "s" : ""}`;
                 }
 
-                convertionsUnits.push({
-                    estimatedTimeNeeded: estimatedTimeNeededLabel,
-                    equivalent: equivalentVal
-                });
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
             }
 
-            else if (value === "weeks") {
-                if (etpFreq[savingsFreq] === "days") {
+            else if (value === "week") {
+                if (etpFreq[savingsFreq] === "day") {
                     equivalent = Math.trunc(timeNeeded / 7);
                     equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
                 }
-                else if (etpFreq[savingsFreq] === "months") {
+                else if (etpFreq[savingsFreq] === "month") {
                     equivalent = Math.trunc(timeNeeded * 4);
                     equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
                 }
@@ -453,18 +601,20 @@ function fillResBox2(
                     equivalentVal = `${equivalent} week${equivalent !== 1 ? "s" : ""}`;
                 }
 
-                convertionsUnits.push({
-                    estimatedTimeNeeded: estimatedTimeNeededLabel,
-                    equivalent: equivalentVal
-                });
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
             }
 
-            else if (value === "months") {
-                if (etpFreq[savingsFreq] === "days") {
+            else if (value === "month") {
+                if (etpFreq[savingsFreq] === "day") {
                     equivalent = Math.trunc(timeNeeded / 30);
                     equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
                 }
-                else if (etpFreq[savingsFreq] === "weeks") {
+                else if (etpFreq[savingsFreq] === "week") {
                     equivalent = Math.trunc(timeNeeded / 4);
                     equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
                 }
@@ -473,18 +623,20 @@ function fillResBox2(
                     equivalentVal = `${equivalent} month${equivalent !== 1 ? "s" : ""}`;
                 }
 
-                convertionsUnits.push({
-                    estimatedTimeNeeded: estimatedTimeNeededLabel,
-                    equivalent: equivalentVal
-                });
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
             }
 
             else {
-                if (etpFreq[savingsFreq] === "days") {
+                if (etpFreq[savingsFreq] === "day") {
                     equivalent = Math.trunc(timeNeeded / 365);
                     equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
                 }
-                else if (etpFreq[savingsFreq] === "weeks") {
+                else if (etpFreq[savingsFreq] === "week") {
                     equivalent = Math.trunc(timeNeeded / 52);
                     equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
                 }
@@ -492,20 +644,23 @@ function fillResBox2(
                     equivalent = Math.trunc(timeNeeded / 12);
                     equivalentVal = `${equivalent} year${equivalent !== 1 ? "s" : ""}`;
                 }
-                convertionsUnits.push({
-                    estimatedTimeNeeded: estimatedTimeNeededLabel,
-                    equivalent: equivalentVal
-                });
+
+                if (equivalent !== 0) {
+                    convertionsUnits.push({
+                        estimatedTimeNeeded: estimatedTimeNeededLabel,
+                        equivalent: equivalentVal
+                    });
+                }
             }
         }
     }
 
     const convertions = `
         <div id="convertionsCon" style="display: none;">
-            <div id="cvheader">Convertions</div>
+            <div id="cvheader">Time Unit Convertions</div>
             ${convertionsUnits.map(a => `
             <div class="convertion">
-                <label class ="labels">
+                <label>
                     <span class="key">${a.estimatedTimeNeeded}</span>
                     <span class="val">${a.equivalent}</span>
                 </label>
@@ -516,7 +671,7 @@ function fillResBox2(
     `;
 
     const timeHighlightElem = document.querySelector(".timeHiglight");
-    
+
     timeHighlightElem.insertAdjacentHTML(
         "beforeend",
         convertions
@@ -531,3 +686,5 @@ function fillResBox2(
         convertionsElem.style.display = 'none';
     });
 }
+
+

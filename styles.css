@@ -389,7 +389,6 @@ input[type="date"] {
 
 .btn-secondary:hover {
     color: var(--accent);
-    text-decoration: underline;
 }
 
 #gensavplanbuttn {

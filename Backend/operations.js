@@ -219,7 +219,7 @@ function defFETCalc(
     // Utruhon ang archi
     if (savingsAmount === 0) {
         mess.textContent = "";
-        return [0,0];
+        return [0, 0];
     }
 
     if (savingsCurrency === priceCurrency) {
@@ -236,10 +236,6 @@ function defFETCalc(
         initET = totalPrice / savingsAmount;
     }
 
-    if (currentBalance >= totalPrice) {
-        return [0, 0];
-    }
-
     if (!Number.isInteger(initET)) {
         fet = Math.trunc(initET);
         neededAm = Math.trunc(totalPrice - (fet * savingsAmount));
@@ -248,11 +244,19 @@ function defFETCalc(
         fet = initET;
     }
 
+    if (balanceCurrency !== savingsCurrency) {
+        currentBalance = currentBalance * AmountConvertion[balanceCurrency][savingsCurrency];
+    }
+
+    if (currentBalance >= totalPrice) {
+        return [0, 0];
+    }
+
     if (neededAm >= currentBalance) {
         neededAm = neededAm - currentBalance;
     }
-    else { 
-        initET = (totalPrice - currentBalance) / savingsAmount; 
+    else {
+        initET = (totalPrice - currentBalance) / savingsAmount;
         fet = Math.trunc(initET);
         neededAm = Math.trunc(totalPrice - (fet * savingsAmount));
     }

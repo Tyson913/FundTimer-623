@@ -384,7 +384,6 @@ input[type="date"] {
     border: 1px solid var(--border);
     color: var(--ink-soft);
     margin-top: 12px;
-    padding: 12px 20px;
 }
 
 .btn-secondary:hover {
@@ -393,7 +392,6 @@ input[type="date"] {
 
 #gensavplanbuttn {
     border-color: transparent;
-    background-color: transparent;
 }
 
 @media (min-width: 640px) {
@@ -405,7 +403,20 @@ input[type="date"] {
         padding: 14px 38px;
     }
     .btn-secondary {
+        display: flex;
         padding: 12px 28px;
+    }
+    .buttonCon {
+        margin-top: 15px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .buttonCon .btn {
+        margin-top: 0;
     }
 }
 
@@ -1094,5 +1105,40 @@ footer {
         animation-duration: 0.001ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.001ms !important;
+    }
+}
+
+
+@media (min-width: 640px) {
+
+    form#ftForm {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: start; 
+    }
+
+
+    form#ftForm .field-section:first-child {
+        padding-right: 22px;
+        border-right: 1px dashed var(--rule);
+    }
+
+    form#ftForm .field-section:nth-child(2) {
+        padding-left: 22px;
+    }
+
+    form#ftForm .field-section:nth-child(2) h2 {
+        margin-top: 0;
+    }
+
+
+    form#ftForm .field-pair {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    form#ftForm .buttonCon {
+        grid-column: 1 / -1;
+        align-self: start;
     }
 }
